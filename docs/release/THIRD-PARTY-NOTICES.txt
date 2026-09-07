@@ -1,0 +1,20 @@
+OBS Racing Motion
+
+Project license: GNU General Public License version 2 (see LICENSE).
+The corresponding project source and build scripts are in source/ inside this bundle.
+
+OBS Studio 32.0.2
+The plugin uses libobs headers and links dynamically to the user's OBS installation.
+OBS itself is not included in this bundle. OBS license text: licenses/OBS.txt.
+
+SCS Telemetry SDK 1.14
+The game plugin is built using this SDK. Its notice is in truck/SCS-SDK-LICENSE.txt.
+
+LLVM-MinGW 20260826 (UCRT, x86_64)
+Build toolchain; C++ and compiler runtime components are linked statically.
+Included notices: licenses/LLVM.txt, licenses/MinGW.txt,
+licenses/MinGW-runtime.txt, licenses/winpthreads.txt and licenses/winstorecompat.txt.
+The compiler tools themselves are not included.
+
+Game names and OBS are names of their respective projects/owners.
+This is an independently developed plugin.

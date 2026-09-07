@@ -1,0 +1,7 @@
+.tools/
+.deps/
+build/
+dist/
+.superpowers/
+__pycache__/
+/release/

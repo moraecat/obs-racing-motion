@@ -1,0 +1,44 @@
+uniform float4x4 ViewProj;
+uniform texture2d image;
+uniform float2 input_size;
+uniform float2 output_size;
+uniform float2 offset;
+uniform float2 rotation_cs;
+uniform float padding;
+uniform float motion_scale;
+uniform float2 pivot_delta;
+
+sampler_state linear_sampler {
+    Filter = Linear;
+    AddressU = Border;
+    AddressV = Border;
+    BorderColor = 00000000;
+};
+struct VertData {
+    float4 pos : POSITION;
+    float2 uv : TEXCOORD0;
+};
+VertData VSDefault(VertData v) {
+    v.pos = mul(float4(v.pos.xyz, 1.0), ViewProj);
+    return v;
+}
+float4 PSMotion(VertData v) : TARGET {
+    float2 p = v.uv * output_size - float2(padding, padding) - input_size * 0.5 - offset;
+    float2 q = float2(rotation_cs.x * p.x + rotation_cs.y * p.y,
+                      -rotation_cs.y * p.x + rotation_cs.x * p.y);
+    // Rotate around the selected point in source space, then apply centered
+    // surge scaling. The correction is exactly zero at zero rotation.
+    float2 rotated_pivot = float2(rotation_cs.x * pivot_delta.x + rotation_cs.y * pivot_delta.y,
+                                 -rotation_cs.y * pivot_delta.x + rotation_cs.x * pivot_delta.y);
+    float2 correction = pivot_delta - rotated_pivot;
+    float2 uv = (q / motion_scale + input_size * 0.5 + correction) / input_size;
+    if (uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0)
+        return float4(0.0, 0.0, 0.0, 0.0);
+    return image.Sample(linear_sampler, uv);
+}
+technique Draw {
+    pass {
+        vertex_shader = VSDefault(v);
+        pixel_shader = PSMotion(v);
+    }
+}
